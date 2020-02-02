@@ -1,0 +1,43 @@
+---
+title: "Assignment 1"
+output:
+  html_document:
+    df_print: paged
+---
+
+# Loading Data into a Data Frame  
+
+### Patrick Maloney, DATA607, Spring 2020
+
+## Introduction
+I chose to explore the data set about alcohol consumption from this fivethirtyeight article : https://fivethirtyeight.com/features/dear-mona-followup-where-do-people-drink-the-most-beer-wine-and-spirits/. Each row in the dataset repesents the average ammount of alcoholic beverages consumed per capita in a particular country in the year 2010.  
+```{r}
+library(devtools)
+library(RCurl)
+library(plyr)
+```
+
+## Load in the data set from GitHub
+
+```{r}
+x <- getURL("https://raw.githubusercontent.com/fivethirtyeight/data/master/alcohol-consumption/drinks.csv")
+df <- data.frame(read.csv(text=x, header=T))
+dim(df)
+```
+```{r}
+head(df)
+```
+
+
+## In Which countries do people not drink alcohol?  
+
+```{r}
+abstain <- subset(df, total_litres_of_pure_alcohol == 0)
+abstain
+```
+
+## Findings  
+
+There are 13 countries where the average adult did not consume any alcohol in 2010.  The article starts off by listing a question from someone wondering how many people had never drank alcohol. My subset provides a quicker look at the countries where, on average, alcohol was not consumed in the year 2010, rather than having to dig through the entire table looking for zeros.
+
+
