@@ -1,0 +1,36 @@
+---
+title: "hw2"
+author: "Patrick Maloney"
+date: "2/9/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# SQL & R
+#### Patrick Maloney 2/9/20
+
+### Setting up the database
+I had a lot of trouble installing the database software this week, so I tried setting up an instance on Google Cloud platform, and created a table using a SQL script.
+
+### Loading the Data
+```{r import, eval=FALSE, include=TRUE}
+library(RMySQL)
+db_user <- 'pmalo46'
+db_password <- 'password'
+db_name <- 'movies'
+db_host <- '34.68.212.181'
+
+movies <- dbConnect(MySQL(), user = db_user, password = db_password, dbname = db_name, host = db_host)
+
+df <- dbGetQuery(movies, 
+                          "SELECT * FROM movies;"
+                          )
+df
+```
+Unfortunately, It didn't work very well, but I have run out of time.
+
+
+
