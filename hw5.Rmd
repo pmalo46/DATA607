@@ -1,0 +1,66 @@
+---
+title: "DATA 607 Week 5 Assignment"
+author: "Patrick Maloney"
+date: "3/1/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+This assignment required creating a data frame of flight arrival information that was given in the assignment in an image. I have crated the CSV file and uploaded to github so it can be reproducible. I will then use tidyr and dplyr to manipulate the dataframe into a tidy format and then analyze the information within.  
+
+## Importing the data
+```{r import}
+library(tidyr)
+library(dplyr)
+
+df <- read.csv('https://raw.githubusercontent.com/pmalo46/DATA607/master/hw5_flights.csv')
+head(df)
+```
+## Wrangling the data
+This dataframe is "wide" and can be improved by tranforming it into a tidy, "long" dataframe.
+
+```{r tidy}
+df_long <- df %>% 
+  #consolidate the destinations into one column
+  gather("city", "count", 3:7 ) %>%
+  #expand the status into separate columns
+  spread(2,4)
+head(df_long, 15)
+```
+Now we need to do some feature engineering to see what percentages of flights were on time.
+```{r percent}
+df_long <- df_long %>% 
+        # create cloumns for total flights, and on time percentage
+        mutate(total_flights = delayed + on_time, on_time_pct = round(100 * on_time / total_flights, 2)) %>% 
+        # sort rows by city and airline
+        arrange(city, airline)
+head(df_long, 15)
+```
+
+## Analysis
+Let's do an analysis to see how the airlines compare
+
+```{r summary}
+summary <- df_long %>%
+  group_by(airline) %>%
+  summarize(city = "Total", delayed = sum(delayed), on_time = sum(on_time), total_flights = sum(total_flights), on_time_pct = round(100 * on_time / total_flights, 2))
+summary
+```
+
+We see that even though AM WEST had more delays, it is compared to many more flights than ALASKA, and thus AM WEST had a better on-time percentage. 
+
+Now let's break it down by city
+```{r visual}
+#add summary to dataframe
+df_final <- bind_rows(df_long, summary)
+library(ggplot2)
+ggplot(df_final) + geom_bar(aes(x = airline, y = on_time_pct, fill = airline), stat = "identity") + 
+                facet_wrap(~ city, nrow = 2)
+```
+
+## Conclusion  
+Oddly enough, it appears that ALASKA outperformed AM WEST in every destination city, but AM WEST performed better overall. It seems that AM WEST's high traffic to Phoenix and high performance there is skewing their total percentage to beat out ALASKA overall, even though ALASKA beats them in each individual city. Phoenix has the highest on time percentage for both airlines, likely due to the desert weather, and so AMWEST greatly benefits by having most of its traffic there. So the totals may be deceiving, and you may in fact be better off on ALASKA than AM WEST.
