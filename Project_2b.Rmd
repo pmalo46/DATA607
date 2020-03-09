@@ -1,0 +1,45 @@
+---
+title: "Project 2b"
+author: "Patrick Maloney"
+date: "3/8/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# NYC Parks dataset
+This data set describes different types of crimes that occur in various parks around NYC. The data is for the fouth quarter of 2019. 
+
+## Import Data
+```{r}
+library(tidyr)
+library(dplyr)
+nyc <- read.csv("https://raw.githubusercontent.com/pmalo46/DATA607/master/nyc-park-crime-stats-q4-2019.csv")
+head(nyc)
+```
+
+## Tidy the Data
+Tidy from a wide dataframe to a long dataframe, and sort by PARK and BOUROUGH.
+
+```{r}
+nyctidy <- nyc %>%
+  pivot_longer(cols = 5:12, names_to = 'Assault_Type', values_to ='Instances') %>%
+  arrange(BOROUGH)
+  
+head(nyctidy, 30)
+```
+
+## Analysis
+
+Here is a breakdown of the totals for each type of crime in the parks by Borough
+
+```{r}
+library(kableExtra)
+summary2 <- nyctidy %>%
+  group_by(BOROUGH, Assault_Type) %>%
+  summarize(Instances = sum(Instances))
+kable(summary2)
+```
+

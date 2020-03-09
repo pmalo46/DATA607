@@ -1,0 +1,50 @@
+---
+title: "Project 2a"
+author: "Patrick Maloney"
+date: "3/7/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Marriage Data Set
+
+This data set contains information on the number of marriages per 1000 residents in different regions of the USA.
+
+## Import data
+```{r}
+library(tidyr)
+library(dplyr)
+mar <- read.csv("https://query.data.world/s/zmajjvo77i3dfzcp5bdqxvbc2uw5h3", header=TRUE, stringsAsFactors=FALSE);
+head(mar)
+```
+
+## Data Tidying
+These wide data sets need to be pivoted to a long format.
+
+```{r}
+mar_long <- mar %>%
+  pivot_longer(cols = 2:5, names_to = "Region", values_to = "Marriages")
+head(mar_long, 25)
+```
+
+## Analysis
+
+Have marriage rates increased or decreased overall?
+
+```{r}
+summary1 <- mar_long %>%
+  group_by(year) %>%
+  summarize(Region = "Total", Avg_Marriages = mean(Marriages, na.rm = TRUE))
+summary1
+```
+
+It looks as tho marriage rates are decreasing. Let's confirm with a visual.
+```{r}
+x <- summary1$year
+y <- summary1$Avg_Marriages
+plot(x,y, type = 'l', xlab = 'Year', ylab = 'Marriages per 1k Residents')
+```
+
+Mariages have indeed sharply declined since 2000.

@@ -1,0 +1,63 @@
+---
+title: "Project 2c"
+author: "Patrick Maloney"
+date: "3/8/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# UNICEF dataset
+
+This dataset contains information on the mortality rates for children under five years old. 
+
+```{r}
+library(tidyverse)
+```
+## Import the Data
+
+```{r}
+u5mr <- read.csv('https://raw.githubusercontent.com/pmalo46/DATA607/master/unicef-u5mr.csv')
+head(u5mr)
+```
+
+## Tidy the data 
+
+tidy from wide to long
+
+```{r}
+u5mr_long <- u5mr %>%
+  pivot_longer(cols = starts_with("U5MR"), names_to = 'Year', values_to ='Mortality_Rate')
+u5mr_long
+```
+
+## Analysis
+
+```{r}
+summary3 <- u5mr_long %>%
+  group_by(Year) %>%
+  summarize(CountryName = "Total", Global_Mortality_Rate = mean(Mortality_Rate, na.rm = TRUE))
+summary3
+```
+
+What was the year with the highest global mortality rate? Which year had the lowest global rate?
+```{r}
+summary3[which.max(summary3$Global_Mortality_Rate),]
+summary3[which.min(summary3$Global_Mortality_Rate),]
+```
+
+
+
+which specific country had the lowest mortality rate in any recorded year? The highest?
+```{r}
+u5mr_long[which.min(u5mr_long$Mortality_Rate),]
+u5mr_long[which.max(u5mr_long$Mortality_Rate),]
+```
+
+
+
+## Conclusion
+
+The global mortality rate was at its worst in 1953 and its best in 2015. The country with the worst ever mortality rate was Mali in 1963, with a staggering 443.5 deaths per 1000 live births,  and the best ever was Luxembourg, with only 1.9 deaths per 1000 live births in 2015. Overall, the mortality rate is decreasing as time goes on.
