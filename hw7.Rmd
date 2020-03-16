@@ -1,0 +1,66 @@
+---
+title: "hw7"
+author: "Patrick Maloney"
+date: "3/15/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+For this assignment, I have created three files: one html, one xml, and one json.  I will explore the different processes for loading each into R.
+
+## Libraries
+
+These are the libraries that will be used
+
+```{r}
+library(RCurl)
+library(jsonlite)
+library(xml2)
+library(rvest)
+library(XML)
+```
+
+## HTML
+
+This will use the 'rvest' library functions to find the html node "table" and then html_table to convert it to a dataframe.
+
+```{r}
+books_html <- read_html("https://raw.githubusercontent.com/pmalo46/DATA607/master/books.html")
+
+
+df_html <- books_html %>%
+                  html_node("table") %>%
+                  html_table()
+
+df_html
+```
+
+## XML
+
+I will use the XML package to load the xml file into R.
+
+```{r}
+books_xml <- xmlInternalTreeParse(getURL("https://raw.githubusercontent.com/pmalo46/DATA607/master/books.xml"))
+xml_apply <- xmlSApply(xmlRoot(books_xml), function(x) xmlSApply(x, xmlValue))
+df_xml <- data.frame(t(xml_apply), row.names = NULL)
+df_xml
+```
+
+## JSON
+
+The JSON file will be imported into R very efficiently with the 'jsonlite' library.
+
+```{r}
+books_json <- fromJSON("https://raw.githubusercontent.com/pmalo46/DATA607/master/books.json") 
+df_json <- as.data.frame(books_json)
+df_json
+```
+
+## Conclusion
+
+After importation, the HTML and XML tables looks the same, but the JSON table will require a little cleaning to fix the titles so that they match with the others.
