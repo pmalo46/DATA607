@@ -1,0 +1,20 @@
+<books>
+  <book>
+    <Title>Life of Pi</Title>
+    <Author>Yann Martel</Author>
+    <Year_published>2001</Year_published>
+    <Pages>460</Pages>
+  </book>
+  <book>
+    <Title>Love in the Time of Cholera</Title>
+    <Author>Gabriel Garcia Marquez</Author>
+    <Year_published>1985</Year_published>
+    <Pages>348</Pages>
+  </book>
+  <book>
+    <Title>Blindness</Title>
+    <Author>Jose Saramago</Author>
+    <Year_published>1995</Year_published>
+    <Pages>349</Pages>
+  </book>
+</books>
