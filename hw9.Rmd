@@ -1,0 +1,33 @@
+---
+title: "hw9"
+author: "Patrick Maloney"
+date: "3/28/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Importing Data to R through API
+
+This R code will pull data on reviews of James Paterson books by the NYT Books API
+
+```{r}
+library(jsonlite)
+
+apikey <- "2GI95CTRasCPnRoFVnkqVBHEtcNuLvUi"
+nyt_url <- "https://api.nytimes.com/svc/books/v3/reviews.json?author=James%20Patterson&api-key="
+
+url <- URLencode(paste0(nyt_url, apikey))
+request <- fromJSON(url)
+revs <- request$results
+```
+
+The code above accesses the NYT API, and uses the API key for authentication. This query returns a JSON file, for which I use jsonlite's fromJSON to convert to an R dataframe.  below is the resulting dataframe
+
+```{r}
+library(kableExtra)
+kable(revs)
+```
+
