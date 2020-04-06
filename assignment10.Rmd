@@ -1,0 +1,74 @@
+---
+title: "Assignment10"
+author: "Patrick Maloney"
+date: "4/5/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Sentiment Analysis
+
+For this weeks assignment, I will be using two sentiment analysis dictionaries (Syuzhet and NRC) to analyze Jerome K. Jerome's "Three Men in a Boat."
+
+The model for the code came from the reading in Chapter 2 of Julia Silge and David Robinson's "Text Mining in R: A Tidy Approach" (2017).
+
+```{r}
+library(tidyverse)
+library(gutenbergr)
+library(tidytext)
+library(syuzhet)
+
+dict_syu <- get_sentiment_dictionary()
+tail(dict_syu)
+```
+
+I have chosen to use the Jerome K. Jerome book "Three Men in a Boat."  This is a comedic novel set mostly on the Thames River in England in the late 19th century, about three friends on a boat trip. I will download this file from the gutenberg project using the gutenbergr library. 
+```{r}
+jerome <- gutenberg_download(c(308), meta_fields = "title") %>%
+  mutate(linenumber = row_number()) %>% 
+  ungroup() %>% 
+  unnest_tokens(word, text)
+
+jerome
+```
+
+
+```{r}
+syuzhet <- jerome %>%
+  inner_join(get_sentiment_dictionary()) %>%
+  group_by(index = linenumber %/% 129) %>%
+  summarise(sentiment = sum(value)) %>%
+  mutate(method = "Syuzhet")
+```
+
+```{r}
+syuzhet %>%
+  ggplot(aes(index, sentiment, fill = method)) +
+  geom_col(show.legend = FALSE) +
+  facet_wrap(~method, ncol = 1, scales = "free_y")
+```
+As We can see above, the snetiment of the lines is overwhelmingly positive. I admit I am impressed by this, as the book speaks wryly about things such as illness and danger, and even includes some sarcasm, but the sentiment plot above manages to capture the positive expereince of the reader throughout the book.
+
+Since this is a humorous book, and some scholars suggest that fear and humor are actually similar emotions, it will be interesting to look at which words in the book are associated with fear and how often they appear.
+```{r}
+nrc <- get_sentiments("nrc")
+
+fear_words <- nrc %>% filter(sentiment == "fear")
+
+jerome %>%
+  inner_join(fear_words) %>%
+  count(word, sort = TRUE)
+```
+And for fun, since comedy is the theatre of the unexpected, lets look at words with the sentiment "surprise."
+
+```{r}
+surprise_words <- nrc %>% filter(sentiment == "surprise")
+
+jerome %>%
+  inner_join(surprise_words) %>%
+  count(word, sort = TRUE)
+```
+
