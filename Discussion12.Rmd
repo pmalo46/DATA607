@@ -1,0 +1,41 @@
+---
+title: "Discussion 12"
+author: "Patrick Maloney"
+date: "4/14/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#Trulia's Recommendation system.
+
+## Introduction
+
+Trulia is a real estate listings site and search engine that allows prospective buyers to search for homes that are up for sale. The site allows for many advanced filtering options based on features such as rooms, school districts, ammenities, and many more.
+
+## Scenario Design
+
+Trulia makes money by selling subscriptions and promoted listings to real estate agents, which means that its end users are also its product. Thus, it makes sense to do two scenario designs in this case.
+
+### For paying Clients
+**Target:** Real Estate professionals looking for new clients
+**Key Goals:** Provide real estate agents access to people looking to purchase a home, and connect them with people most likely to be interested in their listings.
+**Suggestions:** Offer agents the chance to connect with users who may have similarities to other users who purchased housing from them.
+
+### For end users
+**Target:** All end users of the site looking to buy a home.
+**Key Goals:** Curate listings based on user preferences, and use ML to recommend properties they might also be interested in but might fall outside their search criteria.
+**Suggestions:** The site is pretty robust in what it can do, and they have pretty much beaten me to the punch in terms of things to add.
+
+## Reverse Engineering
+
+According to several articles, Trulia's recommender system compares user data with property data to create matches with the best scores to recommend to the user. They use user data such as inquiries and time spent viewing a listing to classify each listing interaction as positive or negative. Trulia has also invested heavily in computer vision technology, which helps it assign additional features to listings that it has gleaned from uploaded photos. 
+
+## Works Cited
+
+Building a Recommender Engine at Trulia - Trulia's Blog. (2020). Retrieved 15 April 2020, from https://www.trulia.com/blog/tech/recommender-engine/
+
+Condon, S. (2020). How Trulia tackled machine learning challenges to build an in-house AI platform | ZDNet. Retrieved 15 April 2020, from https://www.zdnet.com/article/how-trulia-tackled-machine-learning-challenges-to-build-an-in-house-ai-platform/
+
