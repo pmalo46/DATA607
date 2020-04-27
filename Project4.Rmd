@@ -1,0 +1,113 @@
+---
+title: "Project4"
+author: "Patrick Maloney"
+date: "4/25/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+In this project, a corpus of sample emails was created by downloading sample emails from Apache SpamAssassin, two sets of "spam" and "ham" (non-spam) emails were downloaded and unzipped. the files can be found at http://spamassassin.apache.org/old/publiccorpus/ for reproducibility, but I have already downloaded them locally. 
+For those following along at home:
+Training files:
+20021010_easy_ham.tar.bz2
+20030228_spam.tar.bz2
+
+test files:
+20030228_easy_ham_2.tar.bz2
+20021010_spam.tar.bz2
+
+### Import
+```{r}
+library(tm)
+library(tidyverse)
+library(stringr)
+library(RTextTools)
+```
+
+
+Read in the files
+```{r}
+train_ham <- list.files("easy_ham/")
+test_ham <- list.files("easy_ham_2/")
+train_spam <- list.files("spam_2/")
+test_spam <- list.files("spam/")
+
+h_tr <- length(train_ham)
+h_tst <- length(test_ham)
+s_tr <- length(train_spam)
+s_tst <- length(test_spam)
+
+n <- h_tr + s_tr + h_tst + s_tst
+
+emails <- rep(NA, n)
+
+for(i in 1:h_tr){
+  source <- str_c("easy_ham/", train_ham[i])
+  y <- readLines(source)
+  y <- str_c(y, collapse = "")
+  emails[i] <- y
+}
+
+for(i in (h_tr + 1):(h_tr + s_tr)){
+  x <- i - h_tr
+  source <- str_c("spam_2/", train_spam[x])
+  y <- readLines(source)
+  y <- str_c(y, collapse = "")
+  emails[i] <- y
+}
+
+for(i in (h_tr + s_tr + 1):(h_tr + s_tr + h_tst)){
+  x <- i - (h_tr + s_tr)
+  source <- str_c("easy_ham_2/", test_ham[x])
+  y <- readLines(source)
+  y <- str_c(y, collapse = "")
+  emails[i] <- y
+}
+
+for(i in (h_tr + s_tr + h_tst + 1):n){
+  x <- i - (h_tr + s_tr + h_tst)
+  source <- str_c("spam/", test_spam[x])
+  y <- readLines(source)
+  y <- str_c(y, collapse = "")
+  emails[i] <- y
+}
+
+```
+### Build the Corpus
+```{r}
+corpus <- Corpus(VectorSource(emails))
+
+control_list <- list(removePunctuation = TRUE, stopwords = TRUE,
+                     removeNumbers = TRUE, tolower = TRUE, stemDocument = TRUE)
+
+dtm <- DocumentTermMatrix(corpus, control = control_list)
+dtm <- removeSparseTerms(dtm, 0.90)
+
+spam <- c(rep("ham", h_tr),
+          rep("spam", s_tr),
+          rep("ham", h_tst),
+          rep("spam", s_tst))
+```
+### Train the model
+```{r}
+n <- length(spam)
+container <- create_container(dtm, labels = spam,
+                              trainSize = 1:(h_tr + s_tr),
+                              testSize = (h_tst + s_tst + 1):n,
+                              virgin = FALSE)
+
+
+model <- train_model(container, "TREE")
+result <- classify_model(container, model)
+show <- result %>%
+  count(TREE_LABEL)
+show
+```
+
+
+
